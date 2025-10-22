@@ -7,634 +7,315 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f7f9;
-        }
-        /* Custom scrollbar for textareas */
-        textarea::-webkit-scrollbar {
-            width: 8px;
-        }
-        textarea::-webkit-scrollbar-thumb {
-            background-color: #cbd5e1;
-            border-radius: 4px;
-        }
-        .card {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .loading-overlay {
-            background-color: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(2px);
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .card { background-color: white; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .btn { padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        textarea { resize: none; }
     </style>
 </head>
 <body class="p-4 sm:p-8 min-h-screen">
-
-    <div class="max-w-5xl mx-auto">
+    <div class="max-w-7xl mx-auto">
         <header class="text-center mb-10">
-            <h1 class="text-4xl font-extrabold text-indigo-700 mb-2">
-                AI Job Application Toolkit
-            </h1>
-            <p class="text-gray-600 text-lg">
-                Generate tailored cover letters and prepare for your interview using AI analysis.
-            </p>
+            <h1 class="text-4xl font-extrabold text-indigo-700">AI Job Application Toolkit</h1>
+            <p class="text-lg text-gray-600 mt-2">Generate tailored cover letters and prepare for your interview using AI analysis.</p>
         </header>
 
-        <div class="space-y-6">
-            <!-- Input Card (Job Description & Resume) -->
-            <div class="bg-white card rounded-xl p-6 md:p-8 border border-indigo-100">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">1. Provide Job & Candidate Details</h2>
+        <main class="grid lg:grid-cols-3 gap-8">
+            <!-- Left Column: Inputs -->
+            <section class="lg:col-span-1 card p-6 space-y-6">
+                <h2 class="text-xl font-bold text-gray-800 border-b pb-2">1. Provide Job & Candidate Details</h2>
                 
-                <div class="grid md:grid-cols-2 gap-6">
-                    <!-- Job Description Input -->
-                    <div>
-                        <label for="jobDescription" class="block text-sm font-medium text-gray-700 mb-2">
-                            Paste the Job Description (JD) here:
-                        </label>
-                        <textarea id="jobDescription" rows="10" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150" placeholder="e.g., Senior Software Engineer - Must have 5 years experience in React and Node.js..."></textarea>
-                    </div>
-
-                    <!-- Resume Text Input -->
-                    <div>
-                        <label for="resumeText" class="block text-sm font-medium text-gray-700 mb-2">
-                            Paste Your Full Resume Text Here:
-                        </label>
-                        <textarea id="resumeText" rows="10" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition duration-150" placeholder="Copy and paste the entire text content of your resume/CV here..."></textarea>
-                    </div>
+                <div>
+                    <label for="jobDescription" class="block text-sm font-medium text-gray-700 mb-1">Paste the Job Description (JD) here:</label>
+                    <textarea id="jobDescription" rows="10" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm" placeholder="Paste the full text of the job posting..."></textarea>
+                </div>
+                
+                <div>
+                    <label for="resumeText" class="block text-sm font-medium text-gray-700 mb-1">Paste Your Full Resume Text Here:</label>
+                    <textarea id="resumeText" rows="10" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm" placeholder="Include all sections: contact info, experience, education, and skills..."></textarea>
                 </div>
 
-                <!-- Action Buttons (Updated to use flex-wrap for responsiveness) -->
-                <div class="mt-8 flex flex-wrap justify-center gap-4">
-                    <button onclick="generateCoverLetter()" id="generateBtn" class="flex-1 min-w-[200px] bg-indigo-600 text-white py-3 px-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-indigo-700 transition duration-200 transform hover:scale-[1.01] disabled:bg-indigo-400 disabled:cursor-not-allowed">
+                <div class="space-y-3 pt-4">
+                    <button id="generateCoverLetterBtn" class="btn w-full bg-indigo-600 text-white hover:bg-indigo-700">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         Generate Cover Letter
                     </button>
-                    <button onclick="extractKeySkills()" id="skillsBtn" class="flex-1 min-w-[200px] bg-green-500 text-white py-3 px-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-green-600 transition duration-200 transform hover:scale-[1.01] disabled:bg-green-400 disabled:cursor-not-allowed">
-                        ✨ Analyze JD & Extract Skills
-                    </button>
-                    <button onclick="summarizeJobDescription()" id="summaryBtn" class="flex-1 min-w-[200px] bg-teal-500 text-white py-3 px-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-teal-600 transition duration-200 transform hover:scale-[1.01] disabled:bg-teal-400 disabled:cursor-not-allowed">
-                        ✨ Summarize Role Mission
-                    </button>
-                    <button onclick="identifyResumeGaps()" id="gapsBtn" class="flex-1 min-w-[200px] bg-red-600 text-white py-3 px-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-red-700 transition duration-200 transform hover:scale-[1.01] disabled:bg-red-400 disabled:cursor-not-allowed">
-                        ✨ Identify Resume Gaps
-                    </button>
-                    <button onclick="generateInterviewQuestions()" id="questionsBtn" class="flex-1 min-w-[200px] bg-purple-600 text-white py-3 px-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-purple-700 transition duration-200 transform hover:scale-[1.01] disabled:bg-purple-400 disabled:cursor-not-allowed">
-                        ✨ Generate Interview Questions
-                    </button>
-                    <button onclick="draftStarResponseIdea()" id="starBtn" class="flex-1 min-w-[200px] bg-sky-500 text-white py-3 px-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-sky-600 transition duration-200 transform hover:scale-[1.01] disabled:bg-sky-400 disabled:cursor-not-allowed">
-                        ✨ Draft STAR Response Idea
-                    </button>
-                    <button onclick="draftFollowUpEmail()" id="emailBtn" class="flex-1 min-w-[200px] bg-yellow-600 text-white py-3 px-4 rounded-lg font-bold text-sm sm:text-lg hover:bg-yellow-700 transition duration-200 transform hover:scale-[1.01] disabled:bg-yellow-400 disabled:cursor-not-allowed">
-                        ✨ Draft Follow-up Email
-                    </button>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="extractKeySkillsBtn" class="btn bg-green-500 text-white hover:bg-green-600 text-sm">✨ Analyze JD & Extract Skills</button>
+                        <button id="summarizeRoleMissionBtn" class="btn bg-teal-500 text-white hover:bg-teal-600 text-sm">✨ Summarize Role Mission</button>
+                        <button id="identifyResumeGapsBtn" class="btn bg-red-500 text-white hover:bg-red-600 text-sm">✨ Identify Resume Gaps</button>
+                        <button id="generateInterviewQuestionsBtn" class="btn bg-purple-500 text-white hover:bg-purple-600 text-sm">✨ Generate Interview Questions</button>
+                        <button id="draftSTARResponseBtn" class="btn bg-sky-500 text-white hover:bg-sky-600 text-sm">✨ Draft STAR Response Idea</button>
+                        <button id="draftFollowupEmailBtn" class="btn bg-yellow-500 text-white hover:bg-yellow-600 text-sm">✨ Draft Follow-up Email</button>
+                    </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Output Card -->
-            <div class="bg-white card rounded-xl p-6 md:p-8 border border-indigo-100">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-4">2. AI-Generated Results</h2>
+            <!-- Right Column: Results -->
+            <section class="lg:col-span-2 card p-6 space-y-8">
+                <h2 class="text-xl font-bold text-gray-800 border-b pb-2">2. AI-Generated Results</h2>
                 
-                <div id="errorAlert" class="hidden mb-6 p-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
-                    <span class="font-medium">Error:</span> <span id="errorMessage"></span>
+                <div id="loadingIndicator" class="hidden text-center text-indigo-600 font-semibold p-4 border border-indigo-200 rounded-lg">
+                    <svg class="animate-spin h-5 w-5 mr-3 inline-block" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing request... This may take a few moments.
                 </div>
 
-                <div class="grid lg:grid-cols-3 gap-6">
-                    <!-- Cover Letter Output (Main Column) -->
-                    <div class="lg:col-span-2 relative">
-                        <h3 class="text-xl font-medium text-gray-800 mb-3 border-b pb-2">Custom Cover Letter Draft</h3>
-                        <div id="loadingLetter" class="hidden loading-overlay absolute inset-0 flex items-center justify-center rounded-xl z-10">
-                            <p class="mt-3 text-indigo-600 font-medium">Drafting letter...</p>
-                        </div>
-                        <div id="coverLetterOutput" class="min-h-64 h-full text-gray-700 whitespace-pre-wrap leading-relaxed border border-gray-200 p-4 rounded-lg bg-gray-50 italic">
-                            Click 'Generate Cover Letter' to begin.
+                <!-- Cover Letter -->
+                <div class="border-b pb-4">
+                    <h3 class="text-lg font-semibold text-indigo-700 mb-2">Custom Cover Letter Draft</h3>
+                    <div id="coverLetterOutput" class="p-4 bg-gray-50 rounded-lg border text-sm whitespace-pre-wrap">
+                        Click 'Generate Cover Letter' to begin.
+                    </div>
+                </div>
+
+                <!-- Role Mission and Key Skills (Grouped) -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-teal-700 mb-2">Role Mission Summary</h3>
+                        <div id="roleMissionOutput" class="p-4 bg-gray-50 rounded-lg border text-sm whitespace-pre-wrap">
+                            Click 'Summarize Role Mission' for results.
                         </div>
                     </div>
-
-                    <!-- Supporting Outputs Container (Right Column) -->
-                    <div class="lg:col-span-1 space-y-6">
-                         <!-- JD Summary Output -->
-                         <div class="relative">
-                            <h3 class="text-xl font-medium text-gray-800 mb-3 border-b pb-2">Role Mission Summary</h3>
-                            <div id="loadingSummary" class="hidden loading-overlay absolute inset-0 flex items-center justify-center rounded-xl z-10">
-                                <p class="mt-3 text-teal-600 font-medium">Summarizing role...</p>
-                            </div>
-                            <div id="summaryOutput" class="min-h-32 text-gray-700 whitespace-pre-wrap leading-relaxed border border-gray-200 p-4 rounded-lg bg-teal-50 italic">
-                                Click 'Summarize Role Mission' for results.
-                            </div>
-                        </div>
-
-                        <!-- Key Skills Output -->
-                        <div class="relative">
-                            <h3 class="text-xl font-medium text-gray-800 mb-3 border-b pb-2">Key JD Skills</h3>
-                            <div id="loadingSkills" class="hidden loading-overlay absolute inset-0 flex items-center justify-center rounded-xl z-10">
-                                <p class="mt-3 text-green-600 font-medium">Extracting skills...</p>
-                            </div>
-                            <div id="skillOutput" class="min-h-32 text-gray-700 whitespace-pre-wrap leading-relaxed border border-gray-200 p-4 rounded-lg bg-green-50 italic">
-                                Click 'Analyze JD & Extract Skills' for results.
-                            </div>
-                        </div>
-                        
-                        <!-- Resume Gaps Output -->
-                         <div class="relative">
-                            <h3 class="text-xl font-medium text-gray-800 mb-3 border-b pb-2">Identified Resume Gaps</h3>
-                            <div id="loadingGaps" class="hidden loading-overlay absolute inset-0 flex items-center justify-center rounded-xl z-10">
-                                <p class="mt-3 text-red-600 font-medium">Identifying gaps...</p>
-                            </div>
-                            <div id="gapsOutput" class="min-h-32 text-gray-700 whitespace-pre-wrap leading-relaxed border border-gray-200 p-4 rounded-lg bg-red-100 italic">
-                                Click 'Identify Resume Gaps' for critical feedback.
-                            </div>
-                        </div>
-
-                        <!-- Interview Questions Output -->
-                        <div class="relative">
-                            <h3 class="text-xl font-medium text-gray-800 mb-3 border-b pb-2">Tailored Interview Questions</h3>
-                            <div id="loadingQuestions" class="hidden loading-overlay absolute inset-0 flex items-center justify-center rounded-xl z-10">
-                                <p class="mt-3 text-purple-600 font-medium">Generating questions...</p>
-                            </div>
-                            <div id="interviewOutput" class="min-h-32 text-gray-700 whitespace-pre-wrap leading-relaxed border border-gray-200 p-4 rounded-lg bg-purple-50 italic">
-                                Click 'Generate Interview Questions' for prep.
-                            </div>
-                        </div>
-
-                        <!-- STAR Response Output -->
-                        <div class="relative">
-                            <h3 class="text-xl font-medium text-gray-800 mb-3 border-b pb-2">STAR Response Idea</h3>
-                            <div id="loadingStar" class="hidden loading-overlay absolute inset-0 flex items-center justify-center rounded-xl z-10">
-                                <p class="mt-3 text-sky-600 font-medium">Drafting STAR idea...</p>
-                            </div>
-                            <div id="starOutput" class="min-h-32 text-gray-700 whitespace-pre-wrap leading-relaxed border border-gray-200 p-4 rounded-lg bg-sky-50 italic">
-                                Click 'Draft STAR Response Idea' for interview story help.
-                            </div>
-                        </div>
-                        
-                        <!-- Follow-up Email Output -->
-                        <div class="relative">
-                            <h3 class="text-xl font-medium text-gray-800 mb-3 border-b pb-2">Follow-up Email Template</h3>
-                            <div id="loadingEmail" class="hidden loading-overlay absolute inset-0 flex items-center justify-center rounded-xl z-10">
-                                <p class="mt-3 text-yellow-600 font-medium">Drafting email...</p>
-                            </div>
-                            <div id="emailOutput" class="min-h-32 text-gray-700 whitespace-pre-wrap leading-relaxed border border-gray-200 p-4 rounded-lg bg-yellow-50 italic">
-                                Click 'Draft Follow-up Email' for a personalized template.
-                            </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-green-700 mb-2">Key JD Skills</h3>
+                        <div id="keySkillsOutput" class="p-4 bg-gray-50 rounded-lg border text-sm whitespace-pre-wrap">
+                            Click 'Analyze JD & Extract Skills' for results.
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Footer with Policy Links -->
-            <footer class="text-center mt-10 text-sm text-gray-500">
-                <p>&copy; 2025 AI Job Application Toolkit. All rights reserved.</p>
-                <div class="space-x-4 mt-2">
-                    <a href="privacy.html" class="hover:text-indigo-600 transition duration-150">Privacy Policy</a>
-                    <a href="terms.html" class="hover:text-indigo-600 transition duration-150">Terms of Use</a>
+
+                <!-- Gaps and Questions (Grouped) -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-red-700 mb-2">Identified Resume Gaps</h3>
+                        <div id="resumeGapsOutput" class="p-4 bg-gray-50 rounded-lg border text-sm whitespace-pre-wrap">
+                            Click 'Identify Resume Gaps' for critical feedback.
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-purple-700 mb-2">Tailored Interview Questions</h3>
+                        <div id="interviewQuestionsOutput" class="p-4 bg-gray-50 rounded-lg border text-sm whitespace-pre-wrap">
+                            Click 'Generate Interview Questions' for prep.
+                        </div>
+                    </div>
                 </div>
-            </footer>
-        </div>
+
+                <!-- STAR and Follow-up (Grouped) -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-sky-700 mb-2">STAR Response Idea</h3>
+                        <div id="starResponseOutput" class="p-4 bg-gray-50 rounded-lg border text-sm whitespace-pre-wrap">
+                            Click 'Draft STAR Response Idea' for interview story help.
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-yellow-700 mb-2">Follow-up Email Template</h3>
+                        <div id="followupEmailOutput" class="p-4 bg-gray-50 rounded-lg border text-sm whitespace-pre-wrap">
+                            Click 'Draft Follow-up Email' for a personalized template.
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer for Policy and Content Links -->
+        <footer class="mt-10 pt-6 border-t border-gray-300 text-center text-sm text-gray-500 space-x-4">
+            <span>© 2025 AI Job Application Toolkit. All rights reserved.</span>
+            <span class="text-gray-400">|</span>
+            <a href="about.html" class="text-indigo-600 hover:text-indigo-800 font-medium">About Us</a>
+            <span class="text-gray-400">|</span>
+            <a href="blog.html" class="text-indigo-600 hover:text-indigo-800 font-medium">Blog</a>
+            <span class="text-gray-400">|</span>
+            <a href="privacy.html" class="text-indigo-600 hover:text-indigo-800 font-medium">Privacy Policy</a>
+            <span class="text-gray-400">|</span>
+            <a href="terms.html" class="text-indigo-600 hover:text-indigo-800 font-medium">Terms of Use</a>
+        </footer>
     </div>
 
     <script>
-        // CRITICAL FIX: The user's API Key has been embedded here.
+        // --- Configuration & Initialization ---
+        // CRITICAL: Replace "YOUR_GEMINI_API_KEY_HERE" with your actual key.
         const apiKey = "AIzaSyBuKoH1HiOElm4HtmSp7S8XYAWj_eFMCSI"; 
-        
-        // This URL is now correctly constructed using the provided API key
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        const model = "gemini-2.5-flash-preview-09-2025";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-        // Utility function for exponential backoff (rest of the code remains the same)
-        async function fetchWithRetry(url, options, maxRetries = 5) {
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (response.status !== 429) { // Not a rate limit error
-                        return response;
-                    }
-                    // Rate limit hit (429), wait and retry
-                    const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                } catch (error) {
-                    if (i === maxRetries - 1) throw error;
-                    // Wait before retrying on network errors
-                    const delay = Math.pow(2, i) * 1000 + Math.random() * 1000;
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                }
-            }
-            throw new Error("API request failed after multiple retries.");
+        // Elements
+        const jdInput = document.getElementById('jobDescription');
+        const resumeInput = document.getElementById('resumeText');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+
+        // Buttons
+        const buttons = {
+            coverLetter: document.getElementById('generateCoverLetterBtn'),
+            keySkills: document.getElementById('extractKeySkillsBtn'),
+            roleMission: document.getElementById('summarizeRoleMissionBtn'),
+            resumeGaps: document.getElementById('identifyResumeGapsBtn'),
+            interviewQuestions: document.getElementById('generateInterviewQuestionsBtn'),
+            starResponse: document.getElementById('draftSTARResponseBtn'),
+            followupEmail: document.getElementById('draftFollowupEmailBtn')
+        };
+
+        // Outputs
+        const outputs = {
+            coverLetter: document.getElementById('coverLetterOutput'),
+            keySkills: document.getElementById('keySkillsOutput'),
+            roleMission: document.getElementById('roleMissionOutput'),
+            resumeGaps: document.getElementById('resumeGapsOutput'),
+            interviewQuestions: document.getElementById('interviewQuestionsOutput'),
+            starResponse: document.getElementById('starResponseOutput'),
+            followupEmail: document.getElementById('followupEmailOutput')
+        };
+
+        // --- Utility Functions ---
+
+        function setLoading(isLoading) {
+            loadingIndicator.classList.toggle('hidden', !isLoading);
+            Object.values(buttons).forEach(btn => btn.disabled = isLoading);
         }
 
-        /**
-         * Converts a markdown text to HTML, specifically focusing on paragraphs and line breaks.
-         */
-        function formatMarkdownToHtml(markdownText) {
-            // Replace double newlines with paragraph tags
-            let htmlContent = markdownText.split('\n\n')
-                .map(paragraph => `<p class="mb-4">${paragraph.trim()}</p>`)
-                .join('');
-            
-            // Handle single newlines within paragraphs (like a line break)
-            htmlContent = htmlContent.replace(/\n/g, '<br>');
-            // Handle numbered lists (basic replacement)
-            htmlContent = htmlContent.replace(/(\d+\.\s.*?)<br>/g, (match, p1) => `<p class="mb-2 ml-4">${p1}</p>`);
-
-            return htmlContent;
-        }
-
-        function handleError(elementId, message, buttonId) {
-            const errorAlert = document.getElementById('errorAlert');
-            const errorMessageSpan = document.getElementById('errorMessage');
-            
-            errorMessageSpan.textContent = message;
-            errorAlert.classList.remove('hidden');
-
-            const outputDiv = document.getElementById(elementId);
-            outputDiv.innerHTML = "Generation failed. See error message above.";
-            outputDiv.classList.add('italic');
-            
-            if (buttonId) {
-                document.getElementById(buttonId).disabled = false;
-            }
-        }
-
-        function checkInputs() {
-            const jobDescription = document.getElementById('jobDescription').value.trim();
-            const resumeText = document.getElementById('resumeText').value.trim();
-            
-            if (!jobDescription || !resumeText) {
-                handleError('coverLetterOutput', "Please provide both the Job Description and your Full Resume Text to proceed.", null);
+        function isValidInput() {
+            if (jdInput.value.trim().length < 50) {
+                alert('Please paste a substantial Job Description (at least 50 characters).');
                 return false;
             }
-            document.getElementById('errorAlert').classList.add('hidden');
-            return { jobDescription, resumeText };
+            if (resumeInput.value.trim().length < 100) {
+                alert('Please paste your full Resume text (at least 100 characters).');
+                return false;
+            }
+            return true;
         }
 
-        async function generateCoverLetter() {
-            const inputs = checkInputs();
-            if (!inputs) return;
-            const { jobDescription, resumeText } = inputs;
+        async function fetchContent(systemPrompt, userQuery, outputElement) {
+            if (!isValidInput()) return;
 
-            const outputDiv = document.getElementById('coverLetterOutput');
-            const loadingIndicator = document.getElementById('loadingLetter');
-            const generateBtn = document.getElementById('generateBtn');
-
-            outputDiv.innerHTML = "Drafting letter...";
-            outputDiv.classList.add('italic');
-            loadingIndicator.classList.remove('hidden');
-            generateBtn.disabled = true;
-
-            const systemPrompt = `You are a professional career coach and copywriter. Your task is to write a highly tailored, engaging, and professional cover letter draft (maximum 4 paragraphs, 300 words). The letter MUST directly address the requirements in the Job Description, using the provided Full Resume Text to highlight relevant, matched skills and accomplishments. Do not include a date, signature, or address block. Start with a strong hook, and end with a clear statement of interest. Return only the letter text, no introductory phrases.`;
-            
-            const userQuery = `Job Description (JD): "${jobDescription}" Full Resume Text: "${resumeText}" Please generate the cover letter draft based on the above information.`;
+            setLoading(true);
+            outputElement.textContent = 'Processing...';
 
             const payload = {
                 contents: [{ parts: [{ text: userQuery }] }],
                 systemInstruction: { parts: [{ text: systemPrompt }] },
             };
 
-            const options = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            };
+            // Simple exponential backoff retry loop
+            for (let i = 0; i < 3; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
 
-            try {
-                const response = await fetchWithRetry(apiUrl, options);
-                const result = await response.json();
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`API Error: ${response.status} - ${JSON.stringify(errorData)}`);
+                    }
 
-                if (!response.ok) throw new Error(result.error?.message || `API error status: ${response.status}`);
-                
-                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
 
-                if (generatedText) {
-                    outputDiv.innerHTML = formatMarkdownToHtml(generatedText);
-                    outputDiv.classList.remove('italic');
-                } else {
-                    throw new Error("Received an empty or malformed response from the AI.");
+                    if (text) {
+                        outputElement.textContent = text.trim();
+                        setLoading(false);
+                        return;
+                    } else {
+                        throw new Error('Received empty response from the API.');
+                    }
+                } catch (error) {
+                    console.error(`Attempt ${i + 1} failed:`, error.message);
+                    if (i < 2) { // Wait and retry
+                        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
+                    } else { // Final failure
+                        outputElement.textContent = `Error: Failed to generate content after multiple retries. ${error.message}`;
+                        setLoading(false);
+                    }
                 }
-
-            } catch (error) {
-                console.error("Gemini API Error (Cover Letter):", error);
-                handleError('coverLetterOutput', `Cover Letter failed: ${error.message}`, 'generateBtn');
-            } finally {
-                loadingIndicator.classList.add('hidden');
-                generateBtn.disabled = false;
             }
         }
 
-        async function extractKeySkills() {
-            const inputs = checkInputs();
-            if (!inputs) return;
-            const { jobDescription } = inputs;
+        // --- API Call Handlers ---
 
-            const outputDiv = document.getElementById('skillOutput');
-            const loadingIndicator = document.getElementById('loadingSkills');
-            const skillsBtn = document.getElementById('skillsBtn');
-
-            outputDiv.innerHTML = "Extracting skills...";
-            outputDiv.classList.add('italic');
-            loadingIndicator.classList.remove('hidden');
-            skillsBtn.disabled = true;
-
-            const systemPrompt = `You are a job market analyst. Analyze the provided Job Description (JD) and extract the 8 most essential and required skills, technologies, and keywords that the candidate MUST possess to be considered for the role. Present the results as a concise, numbered list (1-8). Do not include any introductory or concluding sentences. Only output the list.`;
-            
-            const userQuery = `Job Description: "${jobDescription}" Please extract the 8 key skills.`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] },
-            };
-
-            const options = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            };
-
-            try {
-                const response = await fetchWithRetry(apiUrl, options);
-                const result = await response.json();
-
-                if (!response.ok) throw new Error(result.error?.message || `API error status: ${response.status}`);
-                
-                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (generatedText) {
-                    outputDiv.innerHTML = generatedText.replace(/\n/g, '<br>');
-                    outputDiv.classList.remove('italic');
-                } else {
-                    throw new Error("Received an empty or malformed response from the AI.");
-                }
-
-            } catch (error) {
-                console.error("Gemini API Error (Skills):", error);
-                handleError('skillOutput', `Skill extraction failed: ${error.message}`, 'skillsBtn');
-            } finally {
-                loadingIndicator.classList.add('hidden');
-                skillsBtn.disabled = false;
-            }
+        function generateCoverLetter() {
+            const jd = jdInput.value.trim();
+            const resume = resumeInput.value.trim();
+            const systemPrompt = "You are a professional career counselor. Write a concise, one-page cover letter (3-4 paragraphs) that meticulously cross-references the candidate's provided resume text with the job description. Highlight specific, matching skills and experiences to demonstrate a perfect fit. Do not use placeholders for names/dates; assume the user will fill them in.";
+            const userQuery = `JOB DESCRIPTION:\n---\n${jd}\n---\nRESUME TEXT:\n---\n${resume}\n---\nDraft the cover letter now:`;
+            fetchContent(systemPrompt, userQuery, outputs.coverLetter);
         }
 
-        async function summarizeJobDescription() {
-            const inputs = checkInputs();
-            if (!inputs) return;
-            const { jobDescription } = inputs;
-
-            const outputDiv = document.getElementById('summaryOutput');
-            const loadingIndicator = document.getElementById('loadingSummary');
-            const summaryBtn = document.getElementById('summaryBtn');
-
-            outputDiv.innerHTML = "Summarizing role...";
-            outputDiv.classList.add('italic');
-            loadingIndicator.classList.remove('hidden');
-            summaryBtn.disabled = true;
-
-            const systemPrompt = `You are a concise executive summary writer. Your goal is to analyze the Job Description and write a single, professional paragraph (max 4 sentences) that defines the core mission, primary challenges, and expected impact of this role. Do not use generic phrases. Return only the summary.`;
-            
-            const userQuery = `Job Description: "${jobDescription}" Please generate the core mission summary.`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] },
-            };
-
-            const options = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            };
-
-            try {
-                const response = await fetchWithRetry(apiUrl, options);
-                const result = await response.json();
-
-                if (!response.ok) throw new Error(result.error?.message || `API error status: ${response.status}`);
-                
-                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (generatedText) {
-                    outputDiv.innerHTML = formatMarkdownToHtml(generatedText);
-                    outputDiv.classList.remove('italic');
-                } else {
-                    throw new Error("Received an empty or malformed response from the AI.");
-                }
-
-            } catch (error) {
-                console.error("Gemini API Error (Summary):", error);
-                handleError('summaryOutput', `Summary generation failed: ${error.message}`, 'summaryBtn');
-            } finally {
-                loadingIndicator.classList.add('hidden');
-                summaryBtn.disabled = false;
-            }
+        function extractKeySkills() {
+            const jd = jdInput.value.trim();
+            const systemPrompt = "Analyze the provided job description and extract the 8 most critical technical and soft skills and keywords. Format the output as a simple, numbered list.";
+            const userQuery = `JOB DESCRIPTION:\n---\n${jd}\n---\nExtract the 8 key skills and keywords:`;
+            fetchContent(systemPrompt, userQuery, outputs.keySkills);
         }
 
-        async function identifyResumeGaps() {
-            const inputs = checkInputs();
-            if (!inputs) return;
-            const { jobDescription, resumeText } = inputs;
-
-            const outputDiv = document.getElementById('gapsOutput');
-            const loadingIndicator = document.getElementById('loadingGaps');
-            const gapsBtn = document.getElementById('gapsBtn');
-
-            outputDiv.innerHTML = "Identifying gaps...";
-            outputDiv.classList.add('italic');
-            loadingIndicator.classList.remove('hidden');
-            gapsBtn.disabled = true;
-
-            const systemPrompt = `You are a critical hiring manager. Your task is to compare the Job Description (JD) and the Full Resume Text and identify 3 to 4 specific areas (skills, experience length, technology, or domain knowledge) where the candidate's resume appears to be lacking or provides insufficient detail based on the JD's requirements. Present this as a bulleted list of weaknesses/gaps. Return only the list.`;
-            
-            const userQuery = `JD: "${jobDescription}" | Resume: "${resumeText}". Please identify the 4 biggest resume gaps or areas of weakness.`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] },
-            };
-
-            const options = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            };
-
-            try {
-                const response = await fetchWithRetry(apiUrl, options);
-                const result = await response.json();
-
-                if (!response.ok) throw new Error(result.error?.message || `API error status: ${response.status}`);
-                
-                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (generatedText) {
-                    outputDiv.innerHTML = generatedText.replace(/^- /gm, '• ').replace(/\n/g, '<br>');
-                    outputDiv.classList.remove('italic');
-                } else {
-                    throw new Error("Received an empty or malformed response from the AI.");
-                }
-
-            } catch (error) {
-                console.error("Gemini API Error (Gaps):", error);
-                handleError('gapsOutput', `Resume gap identification failed: ${error.message}`, 'gapsBtn');
-            } finally {
-                loadingIndicator.classList.add('hidden');
-                gapsBtn.disabled = false;
-            }
+        function summarizeRoleMission() {
+            const jd = jdInput.value.trim();
+            const systemPrompt = "Analyze the provided job description. Provide a concise, single-paragraph summary of the role's core mission, the biggest challenge it addresses, and the expected impact on the company.";
+            const userQuery = `JOB DESCRIPTION:\n---\n${jd}\n---\nSummarize the role mission:`;
+            fetchContent(systemPrompt, userQuery, outputs.roleMission);
         }
 
-        async function generateInterviewQuestions() {
-            const inputs = checkInputs();
-            if (!inputs) return;
-            const { jobDescription, resumeText } = inputs;
-
-            const outputDiv = document.getElementById('interviewOutput');
-            const loadingIndicator = document.getElementById('loadingQuestions');
-            const questionsBtn = document.getElementById('questionsBtn');
-
-            outputDiv.innerHTML = "Generating questions...";
-            outputDiv.classList.add('italic');
-            loadingIndicator.classList.remove('hidden');
-            questionsBtn.disabled = true;
-
-            const systemPrompt = `You are an experienced interviewer. Based on the provided Job Description (JD) and Full Resume Text, generate 5 highly specific interview questions. Focus on questions that bridge the candidate's experience with the role's requirements. Include 1 behavioral question, 2 technical/scenario questions, and 2 questions focused on their past accomplishments matching the JD. Present the results as a numbered list (1-5). Do not include introductory or concluding sentences. Only output the list.`;
-            
-            const userQuery = `JD: "${jobDescription}" | Resume: "${resumeText}". Please generate the 5 tailored interview questions.`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] },
-            };
-
-            const options = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            };
-
-            try {
-                const response = await fetchWithRetry(apiUrl, options);
-                const result = await response.json();
-
-                if (!response.ok) throw new Error(result.error?.message || `API error status: ${response.status}`);
-                
-                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (generatedText) {
-                    outputDiv.innerHTML = generatedText.replace(/\n/g, '<br>');
-                    outputDiv.classList.remove('italic');
-                } else {
-                    throw new Error("Received an empty or malformed response from the AI.");
-                }
-
-            } catch (error) {
-                console.error("Gemini API Error (Questions):", error);
-                handleError('interviewOutput', `Question generation failed: ${error.message}`, 'questionsBtn');
-            } finally {
-                loadingIndicator.classList.add('hidden');
-                questionsBtn.disabled = false;
-            }
+        function identifyResumeGaps() {
+            const jd = jdInput.value.trim();
+            const resume = resumeInput.value.trim();
+            const systemPrompt = "Compare the candidate's resume text against the job description. Identify 3-4 specific areas (skills, experience, or qualifications) where the candidate appears weak or where the resume is silent but the JD emphasizes. Explain why each is a potential gap. Format as a bulleted list.";
+            const userQuery = `JOB DESCRIPTION:\n---\n${jd}\n---\nRESUME TEXT:\n---\n${resume}\n---\nIdentify 3-4 resume gaps:`;
+            fetchContent(systemPrompt, userQuery, outputs.resumeGaps);
         }
 
-        async function draftStarResponseIdea() {
-            const inputs = checkInputs();
-            if (!inputs) return;
-            const { jobDescription, resumeText } = inputs;
-
-            const outputDiv = document.getElementById('starOutput');
-            const loadingIndicator = document.getElementById('loadingStar');
-            const starBtn = document.getElementById('starBtn');
-
-            outputDiv.innerHTML = "Drafting STAR idea...";
-            outputDiv.classList.add('italic');
-            loadingIndicator.classList.remove('hidden');
-            starBtn.disabled = true;
-
-            const systemPrompt = `You are a professional career coach. Your task is to analyze the Job Description and the Full Resume Text. Identify ONE crucial skill/requirement from the JD that the resume appears to have some experience in, and then draft a full STAR method (Situation, Task, Action, Result) template based on that potential match. Use placeholders in brackets (e.g., [Project Name]) for specific details the candidate must fill in. Structure the output clearly using S, T, A, R headings. Return only the structured template.`;
-            
-            const userQuery = `JD: "${jobDescription}" | Resume: "${resumeText}". Please draft a STAR response template based on a strong match.`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] },
-            };
-
-            const options = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            };
-
-            try {
-                const response = await fetchWithRetry(apiUrl, options);
-                const result = await response.json();
-
-                if (!response.ok) throw new Error(result.error?.message || `API error status: ${response.status}`);
-                
-                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (generatedText) {
-                    outputDiv.innerHTML = generatedText.replace(/\n/g, '<br>');
-                    outputDiv.classList.remove('italic');
-                } else {
-                    throw new Error("Received an empty or malformed response from the AI.");
-                }
-
-            } catch (error) {
-                console.error("Gemini API Error (STAR):", error);
-                handleError('starOutput', `STAR response drafting failed: ${error.message}`, 'starBtn');
-            } finally {
-                loadingIndicator.classList.add('hidden');
-                starBtn.disabled = false;
-            }
+        function generateInterviewQuestions() {
+            const jd = jdInput.value.trim();
+            const resume = resumeInput.value.trim();
+            const systemPrompt = "Based on the differences and matches between the resume and the job description, generate 5 highly specific and challenging interview questions the hiring manager is likely to ask. Include at least one behavioral question (STAR method) and one technical question.";
+            const userQuery = `JOB DESCRIPTION:\n---\n${jd}\n---\nRESUME TEXT:\n---\n${resume}\n---\nGenerate 5 specific interview questions:`;
+            fetchContent(systemPrompt, userQuery, outputs.interviewQuestions);
         }
 
-        async function draftFollowUpEmail() {
-            const inputs = checkInputs();
-            if (!inputs) return;
-            const { jobDescription, resumeText } = inputs;
-
-            const outputDiv = document.getElementById('emailOutput');
-            const loadingIndicator = document.getElementById('loadingEmail');
-            const emailBtn = document.getElementById('emailBtn');
-
-            outputDiv.innerHTML = "Drafting email...";
-            outputDiv.classList.add('italic');
-            loadingIndicator.classList.remove('hidden');
-            emailBtn.disabled = true;
-
-            const systemPrompt = `You are an AI assistant drafting a professional thank-you email template for a candidate after an interview. The email should be concise (max 3 short paragraphs), polite, and subtly reference their fit based on the Job Description and their Resume experience. Use placeholders like [Interviewer Name(s)], [Company Name], and [Specific Topic Discussed] in brackets. Return only the email body.`;
-            
-            const userQuery = `JD: "${jobDescription}" | Resume: "${resumeText}". Please draft the follow-up email template.`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] },
-            };
-
-            const options = {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            };
-
-            try {
-                const response = await fetchWithRetry(apiUrl, options);
-                const result = await response.json();
-
-                if (!response.ok) throw new Error(result.error?.message || `API error status: ${response.status}`);
-                
-                const generatedText = result.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if (generatedText) {
-                    outputDiv.innerHTML = generatedText.replace(/\n/g, '<br>');
-                    outputDiv.classList.remove('italic');
-                } else {
-                    throw new Error("Received an empty or malformed response from the AI.");
-                }
-
-            } catch (error) {
-                console.error("Gemini API Error (Email):", error);
-                handleError('emailOutput', `Email drafting failed: ${error.message}`, 'emailBtn');
-            } finally {
-                loadingIndicator.classList.add('hidden');
-                emailBtn.disabled = false;
-            }
+        function draftSTARResponse() {
+            const jd = jdInput.value.trim();
+            const resume = resumeInput.value.trim();
+            const systemPrompt = "Identify a critical skill or experience required by the JD that is present in the resume. Draft a template for a behavioral answer using the STAR (Situation, Task, Action, Result) method based on this match. Use placeholders like [SPECIFIC PROJECT NAME] for the user to fill in the detail. Structure the output clearly using the S-T-A-R headings.";
+            const userQuery = `JOB DESCRIPTION:\n---\n${jd}\n---\nRESUME TEXT:\n---\n${resume}\n---\nDraft a STAR response template:`;
+            fetchContent(systemPrompt, userQuery, outputs.starResponse);
         }
+
+        function draftFollowupEmail() {
+            const jd = jdInput.value.trim();
+            const resume = resumeInput.value.trim();
+            const systemPrompt = "Draft a polite and professional post-interview thank-you email template. Use placeholders for [INTERVIEWER NAME], [DATE], and [SPECIFIC TOPIC DISCUSSED]. In the body, reference 2 key skills from the JD/Resume that were likely discussed, reinforcing the candidate's fit.";
+            const userQuery = `JOB DESCRIPTION:\n---\n${jd}\n---\nRESUME TEXT:\n---\n${resume}\n---\nDraft the follow-up email template:`;
+            fetchContent(systemPrompt, userQuery, outputs.followupEmail);
+        }
+
+
+        // --- Event Listeners ---
+        buttons.coverLetter.addEventListener('click', generateCoverLetter);
+        buttons.keySkills.addEventListener('click', extractKeySkills);
+        buttons.roleMission.addEventListener('click', summarizeRoleMission);
+        buttons.resumeGaps.addEventListener('click', identifyResumeGaps);
+        buttons.interviewQuestions.addEventListener('click', generateInterviewQuestions);
+        buttons.starResponse.addEventListener('click', draftSTARResponse);
+        buttons.followupEmail.addEventListener('click', draftFollowupEmail);
+
+        // Simple placeholder alert function (replacing window.alert)
+        function alert(message) {
+            console.error("User Alert:", message);
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'fixed top-4 right-4 bg-red-600 text-white p-4 rounded-lg shadow-xl z-50 transition-opacity duration-300';
+            alertDiv.textContent = message;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => {
+                alertDiv.style.opacity = '0';
+                setTimeout(() => alertDiv.remove(), 300);
+            }, 5000);
+        }
+
     </script>
 </body>
 </html>
-
