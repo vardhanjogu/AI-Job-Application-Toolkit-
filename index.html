@@ -133,7 +133,7 @@
                             </div>
                         </div>
                         
-                        <!-- Resume Gaps Output (NEW) -->
+                        <!-- Resume Gaps Output -->
                          <div class="relative">
                             <h3 class="text-xl font-medium text-gray-800 mb-3 border-b pb-2">Identified Resume Gaps</h3>
                             <div id="loadingGaps" class="hidden loading-overlay absolute inset-0 flex items-center justify-center rounded-xl z-10">
@@ -155,7 +155,7 @@
                             </div>
                         </div>
 
-                        <!-- STAR Response Output (NEW) -->
+                        <!-- STAR Response Output -->
                         <div class="relative">
                             <h3 class="text-xl font-medium text-gray-800 mb-3 border-b pb-2">STAR Response Idea</h3>
                             <div id="loadingStar" class="hidden loading-overlay absolute inset-0 flex items-center justify-center rounded-xl z-10">
@@ -179,15 +179,26 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Footer with Policy Links -->
+            <footer class="text-center mt-10 text-sm text-gray-500">
+                <p>&copy; 2025 AI Job Application Toolkit. All rights reserved.</p>
+                <div class="space-x-4 mt-2">
+                    <a href="privacy.html" class="hover:text-indigo-600 transition duration-150">Privacy Policy</a>
+                    <a href="terms.html" class="hover:text-indigo-600 transition duration-150">Terms of Use</a>
+                </div>
+            </footer>
         </div>
     </div>
 
     <script>
-        // Global variables for API key and URL
-        const apiKey = ""; 
+        // CRITICAL FIX: The user's API Key has been embedded here.
+        const apiKey = "AIzaSyBuKoH1HiOElm4HtmSp7S8XYAWj_eFMCSI"; 
+        
+        // This URL is now correctly constructed using the provided API key
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
-        // Utility function for exponential backoff
+        // Utility function for exponential backoff (rest of the code remains the same)
         async function fetchWithRetry(url, options, maxRetries = 5) {
             for (let i = 0; i < maxRetries; i++) {
                 try {
@@ -626,3 +637,4 @@
     </script>
 </body>
 </html>
+
